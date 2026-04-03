@@ -227,9 +227,7 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function()
-    vim.highlight.on_yank()
-  end,
+  callback = function() vim.highlight.on_yank() end,
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -479,6 +477,15 @@ require('lazy').setup({
 
       -- Shortcut for searching your Neovim configuration files
       vim.keymap.set('n', '<leader>sn', function() builtin.find_files { cwd = vim.fn.stdpath 'config' } end, { desc = '[S]earch [N]eovim files' })
+
+      -- Shortcut for adding php comment blocks
+      vim.keymap.set('n', '<leader>cd', function()
+        local line = vim.api.nvim_get_current_line()
+        if line:match '^%s*$' then -- if line if empty of whitespace
+          vim.api.nvim_put({ '/**', ' * ', ' */' }, 'l', true, true)
+          vim.api.nvim_command 'normal! k$'
+        end
+      end, { desc = '[C]omment [D]oc block' })
     end,
   },
 
@@ -946,6 +953,17 @@ require('lazy').setup({
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
+  { -- Outline plugin in a sidebar
+    'hedyhli/outline.nvim',
+    config = function()
+      -- Example mapping to toggle outline
+      vim.keymap.set('n', '<leader>o', '<cmd>Outline<CR>', { desc = 'Toggle Outline' })
+
+      require('outline').setup {
+        -- Your setup opts here (leave empty to use defaults)
+      }
+    end,
+  },
   { -- Collection of various small independent plugins/modules
     'nvim-mini/mini.nvim',
     config = function()
